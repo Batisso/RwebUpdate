@@ -114,9 +114,13 @@
         /* ── Global smooth transitions ── */
 
         /* Smooth all interactive elements */
-        a, button, input, textarea, select {
+        a,
+        button,
+        input,
+        textarea,
+        select {
           transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease,
-                      box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
+            box-shadow 0.3s ease, opacity 0.3s ease, transform 0.3s ease;
         }
 
         /* Smooth image hovers globally */
@@ -129,8 +133,9 @@
           opacity: 0;
           transform: translateY(2rem);
           transition: opacity 0.8s cubic-bezier(0.33, 1, 0.68, 1),
-                      transform 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+            transform 0.8s cubic-bezier(0.33, 1, 0.68, 1);
         }
+
         .section.is-visible {
           opacity: 1;
           transform: translateY(0);
@@ -141,7 +146,10 @@
           html {
             scroll-behavior: auto;
           }
-          *, *::before, *::after {
+
+          *,
+          *::before,
+          *::after {
             animation-duration: 0.01ms !important;
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
@@ -2203,15 +2211,15 @@ a,
                       grid-template-rows: 0fr;
                       opacity: 0;
                       transition: grid-template-rows 0.65s cubic-bezier(0.33, 1, 0.68, 1),
-                                  opacity 0.5s ease,
-                                  margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
+                        opacity 0.5s ease,
+                        margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
                       margin-top: 0;
                       border-radius: 12px;
                       overflow: hidden;
                       max-height: none;
                     }
 
-                    .proj-item__mobile-img-wrap > img {
+                    .proj-item__mobile-img-wrap>img {
                       min-height: 0;
                       width: 100%;
                       object-fit: cover;
@@ -2227,11 +2235,11 @@ a,
                       margin-top: 1.25rem;
                       max-height: none;
                       transition: grid-template-rows 0.7s cubic-bezier(0.33, 1, 0.68, 1),
-                                  opacity 0.6s ease 0.05s,
-                                  margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+                        opacity 0.6s ease 0.05s,
+                        margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
                     }
 
-                    .proj-item.is-hovered .proj-item__mobile-img-wrap > img {
+                    .proj-item.is-hovered .proj-item__mobile-img-wrap>img {
                       transform: scale(1);
                       transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.1s;
                     }
@@ -2239,15 +2247,15 @@ a,
                     /* Smoother desc reveal on mobile */
                     .proj-item__desc {
                       transition: max-height 0.65s cubic-bezier(0.33, 1, 0.68, 1),
-                                  opacity 0.4s ease,
-                                  margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
+                        opacity 0.4s ease,
+                        margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
                     }
 
                     .proj-item.is-hovered .proj-item__desc {
                       max-height: 200px;
                       transition: max-height 0.7s cubic-bezier(0.33, 1, 0.68, 1),
-                                  opacity 0.5s ease 0.08s,
-                                  margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+                        opacity 0.5s ease 0.08s,
+                        margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
                     }
 
                     /* Stats: always visible on mobile, no jarring expand */
