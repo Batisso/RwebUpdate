@@ -2155,6 +2155,101 @@ a,
                       padding-left: 0;
                     }
                   }
+
+                  /* ── Mobile smooth transitions override ── */
+                  @media screen and (max-width: 991px) {
+
+                    /* Use grid-row trick for smooth height animation (GPU-friendly) */
+                    .proj-item__mobile-img-wrap {
+                      display: grid !important;
+                      grid-template-rows: 0fr;
+                      opacity: 0;
+                      transition: grid-template-rows 0.65s cubic-bezier(0.33, 1, 0.68, 1),
+                                  opacity 0.5s ease,
+                                  margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
+                      margin-top: 0;
+                      border-radius: 12px;
+                      overflow: hidden;
+                      max-height: none;
+                    }
+
+                    .proj-item__mobile-img-wrap > img {
+                      min-height: 0;
+                      width: 100%;
+                      object-fit: cover;
+                      border-radius: 12px;
+                      overflow: hidden;
+                      transform: scale(1.04);
+                      transition: transform 0.8s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    .proj-item.is-hovered .proj-item__mobile-img-wrap {
+                      grid-template-rows: 1fr;
+                      opacity: 1;
+                      margin-top: 1.25rem;
+                      max-height: none;
+                      transition: grid-template-rows 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+                                  opacity 0.6s ease 0.05s,
+                                  margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    .proj-item.is-hovered .proj-item__mobile-img-wrap > img {
+                      transform: scale(1);
+                      transition: transform 1.2s cubic-bezier(0.19, 1, 0.22, 1) 0.1s;
+                    }
+
+                    /* Smoother desc reveal on mobile */
+                    .proj-item__desc {
+                      transition: max-height 0.65s cubic-bezier(0.33, 1, 0.68, 1),
+                                  opacity 0.4s ease,
+                                  margin-top 0.65s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    .proj-item.is-hovered .proj-item__desc {
+                      max-height: 200px;
+                      transition: max-height 0.7s cubic-bezier(0.33, 1, 0.68, 1),
+                                  opacity 0.5s ease 0.08s,
+                                  margin-top 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    /* Stats: always visible on mobile, no jarring expand */
+                    .proj-item__stats {
+                      max-height: 120px !important;
+                      opacity: 1 !important;
+                      padding-left: 0;
+                      transition: none;
+                    }
+
+                    /* Smoother ghost number shift */
+                    .proj-item__ghost {
+                      transition: color 0.5s ease, transform 0.7s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    /* Prevent layout shift: smooth the title slide */
+                    .proj-item__title {
+                      transition: transform 0.6s cubic-bezier(0.33, 1, 0.68, 1);
+                    }
+
+                    /* Prevent title from shifting on mobile — keep it in place */
+                    .proj-item.is-hovered .proj-item__title {
+                      transform: none;
+                    }
+
+                    /* Ensure padding doesn't cause stutter */
+                    .proj-item {
+                      padding: 2rem 0;
+                      will-change: opacity, transform;
+                    }
+
+                    /* Smooth line highlight */
+                    .proj-item__line {
+                      transition: background 0.5s ease;
+                    }
+
+                    .proj-item.is-hovered .proj-item__line {
+                      background: #111;
+                    }
+                  }
                 </style>
 
                 <!-- Item 01 -->
@@ -2379,19 +2474,30 @@ a,
             });
             /* Note: mouseleave event was intentionally removed so the last hovered image remains visible! */
 
-            /* Scroll-based active state for Mobile */
+            /* Scroll-based active state for Mobile — debounced for smooth transitions */
+            var pendingActivation = null;
+            var debounceTimer = null;
             var activeIo = new IntersectionObserver(function (entries) {
               if (!isMobile()) return;
               entries.forEach(function (e) {
                 if (e.isIntersecting) {
                   var idx = parseInt(e.target.getAttribute('data-proj'), 10);
-                  activate(idx);
-                  items.forEach(function (el) { el.classList.remove('is-hovered'); });
-                  e.target.classList.add('is-hovered');
-                  panel.classList.add('is-visible');
+                  var targetItem = e.target;
+
+                  /* Debounce: wait a moment before switching active item to prevent rapid toggling */
+                  clearTimeout(debounceTimer);
+                  pendingActivation = { idx: idx, target: targetItem };
+                  debounceTimer = setTimeout(function () {
+                    if (!pendingActivation) return;
+                    activate(pendingActivation.idx);
+                    items.forEach(function (el) { el.classList.remove('is-hovered'); });
+                    pendingActivation.target.classList.add('is-hovered');
+                    panel.classList.add('is-visible');
+                    pendingActivation = null;
+                  }, 80);
                 }
               });
-            }, { rootMargin: "-30% 0px -30% 0px" });
+            }, { rootMargin: "-20% 0px -35% 0px", threshold: 0.15 });
 
             items.forEach(function (item) {
               activeIo.observe(item);
@@ -2400,9 +2506,14 @@ a,
             var listIo = new IntersectionObserver(function (entries) {
               if (!isMobile()) return;
               if (!entries[0].isIntersecting) {
-                items.forEach(function (el) { el.classList.remove('is-hovered'); });
-                panel.classList.remove('is-visible');
-                active = -1;
+                clearTimeout(debounceTimer);
+                pendingActivation = null;
+                /* Delay removal so closing animation plays out */
+                setTimeout(function () {
+                  items.forEach(function (el) { el.classList.remove('is-hovered'); });
+                  panel.classList.remove('is-visible');
+                  active = -1;
+                }, 200);
               }
             }, { threshold: 0 });
             listIo.observe(document.getElementById('projList'));
